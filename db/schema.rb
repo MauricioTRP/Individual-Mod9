@@ -10,61 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2022_11_04_032502) do
+ActiveRecord::Schema[7.0].define(version: 2022_11_04_040644) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "articles", force: :cascade do |t|
-    t.string "title"
-    t.string "content"
-    t.boolean "published"
+  create_table "boards", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-  end
-
-  create_table "degrees", force: :cascade do |t|
-    t.string "degree"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "degrees_users", id: false, force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "degree_id", null: false
-    t.index ["user_id", "degree_id"], name: "index_degrees_users_on_user_id_and_degree_id"
-  end
-
-  create_table "hobbies", force: :cascade do |t|
-    t.string "hobby"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "hobbies_users", id: false, force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "hobby_id", null: false
-    t.index ["user_id", "hobby_id"], name: "index_hobbies_users_on_user_id_and_hobby_id"
-  end
-
-  create_table "industries", force: :cascade do |t|
-    t.string "industry"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["industry"], name: "index_industries_on_industry", unique: true
-  end
-
-  create_table "jobs", force: :cascade do |t|
-    t.string "job_title"
-    t.bigint "industry_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["industry_id"], name: "index_jobs_on_industry_id"
-  end
-
-  create_table "jobs_users", id: false, force: :cascade do |t|
-    t.bigint "user_id", null: false
-    t.bigint "job_id", null: false
-    t.index ["user_id", "job_id"], name: "index_jobs_users_on_user_id_and_job_id"
   end
 
   create_table "posts", force: :cascade do |t|
@@ -73,7 +25,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_032502) do
     t.bigint "tag_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["tag_id"], name: "index_posts_on_tag_id"
+    t.index ["user_id"], name: "index_posts_on_user_id"
   end
 
   create_table "tags", force: :cascade do |t|
@@ -84,13 +38,20 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_032502) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "email", default: "", null: false
+    t.string "encrypted_password", default: "", null: false
+    t.string "reset_password_token"
+    t.datetime "reset_password_sent_at"
+    t.datetime "remember_created_at"
     t.string "name"
-    t.string "email"
-    t.text "description"
+    t.bigint "post_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["post_id"], name: "index_users_on_post_id"
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "jobs", "industries"
   add_foreign_key "posts", "tags"
+  add_foreign_key "posts", "users"
 end
